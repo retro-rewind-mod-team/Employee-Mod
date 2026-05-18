@@ -1,0 +1,74 @@
+# ── Required Fields ───────────────────────────────────────────────────────────
+
+name: "Employee Mod"
+author: "Xerduntis"
+version: "1.5.0"
+mod_type: lua
+
+# ── Optional Fields ───────────────────────────────────────────────────────────
+
+description: "Permanently customize your staff's traits, salary, and skill levels. Changes are written directly into your save file and persist after reloading."
+
+# Nexus Mods IDs — used for update checking.
+
+
+config:
+  - key: Debug
+    label: "Debug Mode"
+    type: bool
+    default: false
+
+  - key: trait_strong_immune
+    label: "Trait: Strong Immune System"
+    type: bool
+    default: true
+
+  - key: trait_runner
+    label: "Trait: Runner"
+    type: bool
+    default: true
+
+  - key: trait_thick_skinned
+    label: "Trait: Thick-Skinned"
+    type: bool
+    default: true
+
+  - key: trait_strong_bladder
+    label: "Trait: Strong Bladder"
+    type: bool
+    default: true
+
+  - key: trait_energetic
+    label: "Trait: Energetic"
+    type: bool
+    default: true
+
+  - key: trait_loyal
+    label: "Trait: Loyal"
+    type: bool
+    default: true
+
+  - key: trait_complaint_handler
+    label: "Trait: Complaint Handler"
+    type: bool
+    default: true
+
+  - key: staff
+    label: "Staff Settings"
+    description: "Use * as name to apply to all staff. Max. 2 entries."
+    type: table
+    columns:
+      - key: name
+        label: "Name (* = all)"
+        type: str
+      - key: salary
+        label: "Salary (cents)"
+        type: int
+      - key: skillCheckout
+        label: "Checkout (0–99)"
+        type: int
+      - key: skillReturn
+        label: "Return (0–99)"
+        type: int
+    default:
+      - { name: "*", salary: 4000, skillCheckout: 99, skillReturn: 99 }

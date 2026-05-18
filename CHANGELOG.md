@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.5
+- Traits are now configured as individual boolean flags (`trait_strong_immune`, `trait_runner`, etc.) in `config.lua` instead of a `traits = { 2, 3, … }` array — aligns with the RRMM YAML schema and allows per-trait toggling without editing raw IDs
+- Staff configuration moved from a keyed table (`["*"]`, `["Sarah"]`) to an array under `staff` — entries use a `name` field, with `"*"` as the wildcard for all staff
+- `main.lua`: `WANTED_TRAITS` is now computed once at load time from the boolean flags
+- `main.lua`: `getConfig()` iterates `CONFIG.staff` and returns the first exact name match, falling back to the `"*"` wildcard entry
+
+## 1.4.1
+- Added Employee-Mod.yaml for RRMM (Retro Rewind Mod Manager) support
+
 ## 1.4
 - Removed trait session cache (`lastWrittenTraits`) and its reload reset hook — both introduced in 1.3 to work around a UE4SS limitation
 - Traits are now always rewritten via `Empty()` + `Add()` on every save; the TSet read API (`Num`, `ForEach`, `Contains`) is non-functional for TSets embedded in FStructs regardless of access path, making read-before-write impossible without external state

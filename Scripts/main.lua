@@ -1,6 +1,6 @@
 -- ============================================================
 --  Retro Rewind - Employee Mod
---  Version: 1.4
+--  Version: 1.5
 --
 --  Modifies staff traits, salary, and skills persistently
 --  by writing directly into the SaveGame object before it
@@ -22,6 +22,24 @@
 -- ============================================================
 
 local CONFIG = require("config")
+
+-- Build wanted trait IDs once from the global boolean flags.
+local TRAIT_FLAGS = {
+    { key = "trait_strong_immune",     id = 2 },
+    { key = "trait_runner",            id = 3 },
+    { key = "trait_thick_skinned",     id = 4 },
+    { key = "trait_strong_bladder",    id = 5 },
+    { key = "trait_energetic",         id = 6 },
+    { key = "trait_loyal",             id = 7 },
+    { key = "trait_complaint_handler", id = 8 },
+}
+
+local WANTED_TRAITS = {}
+for _, flag in ipairs(TRAIT_FLAGS) do
+    if CONFIG[flag.key] then
+        table.insert(WANTED_TRAITS, flag.id)
+    end
+end
 
 -- ============================================================
 -- INTERNAL
@@ -75,8 +93,12 @@ local function traitName(id)
 end
 
 local function getConfig(name)
-    if CONFIG[name] then return CONFIG[name] end
-    return CONFIG["*"]
+    local wildcard = nil
+    for _, entry in ipairs(CONFIG.staff) do
+        if entry.name == name then return entry end
+        if entry.name == "*" then wildcard = entry end
+    end
+    return wildcard
 end
 
 local function getStaffName(staff)
@@ -106,25 +128,16 @@ local function applyToSaveGameStaff(staff, config, name)
 
     -- TRAITS
     -- Always rewrite: TSet read API is non-functional in this context.
-    if config.traits then
-        local ts = staff[TRAIT_KEY]
-        if ts then
-            local wantedIds = {}
-            for _, id in ipairs(config.traits) do
-                if type(id) == "number" and id >= TRAIT_MIN and id <= TRAIT_MAX then
-                    table.insert(wantedIds, id)
-                end
-            end
-
-            pcall(function() ts:Empty() end)
-            local names = {}
-            for _, id in ipairs(wantedIds) do
-                pcall(function() ts:Add(id) end)
-                table.insert(names, traitName(id))
-            end
-            log("  " .. name .. " traits: {" .. table.concat(names, ", ") .. "}")
-            anyChange = true
+    local ts = staff[TRAIT_KEY]
+    if ts then
+        pcall(function() ts:Empty() end)
+        local names = {}
+        for _, id in ipairs(WANTED_TRAITS) do
+            pcall(function() ts:Add(id) end)
+            table.insert(names, traitName(id))
         end
+        log("  " .. name .. " traits: {" .. table.concat(names, ", ") .. "}")
+        anyChange = true
     end
 
     -- SALARY
